@@ -16,15 +16,11 @@ $("#clear").on("click", function() {
     clearArticles();
 });
 
-$(document).on("click", "#deleteArticle", function() {
-    var thisId = $(this).attr("data-id");
-    $.ajax({
-        method: "DELETE",
-        url: "/articles/delete/" + thisId
-    });
+$("#saved").on("click", function() {
     $("#articles").hide();
     $("#scrape").hide();
     $("#savedArticles").empty();
+    $("#savedArticles").show();
     savedArticles();
 });
 
@@ -39,11 +35,15 @@ $(document).on("click", "#saveArticle", function() {
     location.reload();
 });
 
-$("#saved").on("click", function() {
+$(document).on("click", "#deleteArticle", function() {
+    var thisId = $(this).attr("data-id");
+    $.ajax({
+        method: "DELETE",
+        url: "/articles/delete/" + thisId
+    });
     $("#articles").hide();
     $("#scrape").hide();
     $("#savedArticles").empty();
-    $("#savedArticles").show();
     savedArticles();
 });
 
@@ -79,9 +79,18 @@ $(document).on("click", "#comment", function() {
         commentInput.append(row);
         $("#modal-comment").append(commentInput);
         $("#comment-footer").append(saveComment);
-        
-        
 
+        if (data.comments) {
+            console.log(data.comments);
+            var commentDisplay = $("<a>")
+                .addClass("waves-effect btn blue-grey disabled")
+                .text(data.comments.body);
+            var clearButton = $("<a>")
+                .addClass("waves-effect waves-blue-grey btn-flat")
+                .attr("data-id", data.comments._id)
+                .text("X");
+            $("#savedComment").append(commentDisplay, clearButton);
+        }
     });
 });
 
@@ -96,13 +105,7 @@ $(document).on("click", "#save-comment", function() {
         }
     }).then(function(data) {
         console.log(data);
-        var commentDisplay = $("<a>")
-            .addClass("waves-effect btn blue-grey disabled")
-            .text(data.data);
-        var clearButton = $("<a>")
-            .addClass("waves-effect waves-green btn-flat")
-            .text("X");
-        $("#savedComment").append(commentDisplay, clearButton);
+       
     });
 
 });
