@@ -4,9 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Scraper | c811k</title>
+    
+    <!-- Materialize -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
 </head>
 <body>
-    
+    <div class="navbar-fixed">
+        <nav>
+            <div class="nav-wrapper blue-grey">
+                <a href="/" class="brand-logo">Scraper</a>
+                <ul class="right hide-on-med-and-down">
+                    <li>
+                        <a class="waves-effect waves-light  btn blue-grey darken-2 orange-text text-lighten-1" id="saved"><i class="material-icons right">save</i>Saved Article</a>
+                    </li>
+                    <li>
+                        <a class="waves-effect waves-light  btn blue-grey darken-2 orange-text text-lighten-1 modal-trigger" href="#modalScrape" id="scrape"><i class="material-icons right">assignment_returned</i>Scrape New Articles</a>
+                    </li>
+                    <li><a class="waves-effect waves-light btn blue-grey darken-2 orange-text text-lighten-1 modal-trigger" href="#modalClear" id="clear"><i class="material-icons right">clear</i>Clear Articles</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div class="background">
+        <div class="card transparent z-depth-2">
+            <!-- <h1 class="center-align">LA TIMES EDITION</h1> -->
+                <!-- <img class="responsive-img" src="assets/image/newspaper.jpg" alt="background"/> -->
+        </div>
+    </div>
+    <div class="section"></div>
+    <div id="articles"></div>
+    <div id="savedArticles"></div>
+    <div class="section"></div>
+    <div class="page-footer blue-grey darken-2 center-align section">
+        Scraper © 2019
+    </div>
+    <!-- Modal -->
+    <div id="modalScrape" class="modal">
+        <div class="modal-content center-align">
+            <h4>Added new articles!</h4>
+        </div>
+        <div class="modal-footer">
+            <a href="/" class="modal-close waves-effect waves-green btn-flat">OK</a>
+        </div>
+    </div>
+    <div id="modalClear" class="modal">
+        <div class="modal-content center-align">
+            <h4>All articles have been removed!</h4>
+        </div>
+        <div class="modal-footer">
+            <a class="modal-close waves-effect waves-green btn-flat">OK</a>
+        </div>
+    </div>
+
+    <div id="modalComment" class="modal">
+        <div class="modal-content center-align" id="modal-comment">
+        </div>
+        <div class="modal-footer">
+            <a class="modal-close waves-effect waves-green btn-flat">OK</a>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
