@@ -1,9 +1,8 @@
-displayArticles();
-
 $(document).ready(function() {
     $('.modal').modal();
 });
 
+displayArticles();
 
 $("#scrape").on("click", function() {
     clearArticles();
@@ -18,16 +17,14 @@ $("#clear").on("click", function() {
 });
 
 $(document).on("click", "#saveArticle", function() {
-    console.log("hello");
     var thisId = $(this).attr("data-id");
 
     $.ajax({
         method: "PUT",
         url: "/articles/" + thisId
     }).then( (data) => {
-        console.log(data);
     });
-    
+    location.reload();
 });
 
 $("#saved").on("click", function() {
@@ -36,20 +33,21 @@ $("#saved").on("click", function() {
     $("#savedArticles").empty();
     $("#savedArticles").show();
     $.getJSON("/saved", function(data) {
-        var latimes = "https://wwww.latimes.com";
+        var latimes = "https://www.latimes.com";
         for (let i = 0; i <data.length; i++) {
             var div = $("<div>")
                 .addClass("card blue-grey z-depth-4");
             var content = $("<div>").addClass("card-content white-text");
-            var title = $("<span>")
+            var title = $("<a>")
                 .addClass("card-title")
+                .attr("href", latimes + data[i].link)
                 .text(data[i].headline);
             var action = $("<div>").addClass("card-action right-align");
             var deleteComment = $("<a>")
                 .addClass("waves-effect btn blue-grey darken-2")
                 .attr("data-id", data[i]._id)
                 .attr("id", "deleteComment")
-                .text("DELETE COMMENTS");
+                .text("DELETE ARTICLE");
             var comment = $("<a>")
                 .addClass("waves-effect btn blue-grey darken-2 modal-trigger")
                 .attr("data-id", data[i]._id)
@@ -66,15 +64,61 @@ $("#saved").on("click", function() {
 
 $(document).on("click", "#comment", function() {
     $("#modal-comment").empty();
-    var commentInput = $("<form>").addClass("col s12");
-    var row = $("<div>").addClass("row");
-    var field = $("<div>").addClass("input-field col s12");
-    var textarea = $("<textarea>").addClass("materialize-textarea");
-    var label = $("<label>").attr("for", "textarea1").text("Comments");
-    field.append(textarea, label);
-    row.append(field);
-    commentInput.append(row);
-    $("#modal-comment").append(commentInput);
+    $("#comment-footer").empty();
+
+    var thisId = $(this).attr("data-id");
+
+    $.ajax({
+        method: "GET",
+        url:"/articles/" +thisId
+    }).then(function(data) {
+        console.log(data);
+        
+        var commentInput = $("<form>").addClass("col s12");
+        var row = $("<div>").addClass("row");
+        var field = $("<div>").addClass("input-field col s12");
+        var textarea = $("<textarea>")
+            .addClass("materialize-textarea")
+            .attr("id", "commentInput");
+        var label = $("<label>")
+            .attr("for", "textarea1")
+            .text("Comments");
+        var saveComment = $("<a>")
+            .addClass("modal-close waves-effect btn blue-grey darken-2")
+            .attr("data-id", data._id)
+            .attr("id", "save-comment")
+            .text("Save");
+
+        field.append(textarea, label);
+        row.append(field);
+        commentInput.append(row);
+        $("#modal-comment").append(commentInput);
+        $("#comment-footer").append(saveComment);
+        
+        
+
+    });
+});
+
+$(document).on("click", "#save-comment", function() {
+    var thisId = $(this).attr("data-id");
+
+    $.ajax({
+        method: "POST",
+        url: "/articles/" + thisId,
+        data: {
+            body: $("#commentInput").val()
+        }
+    }).then(function(data) {
+        console.log(data);
+        var commentDisplay = $("<a>")
+            .addClass("waves-effect btn blue-grey disabled")
+            .text(data.data);
+        var clearButton = $("<a>")
+            .addClass("waves-effect btn-flat blue-grey")
+            .text("X");
+        $("#savedComment").append(commentDisplay, clearButton);
+    });
 
 });
 

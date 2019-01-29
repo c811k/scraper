@@ -10,15 +10,15 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
+var MONGODB_URL = process.env.MONGODB_URL || "mongodb://localhost/mongoHeadlines";
 
-mongoose.connect(MONGODB_URI);
+mongoose.connect(MONGODB_URL, { useNewUrlParser: true });
 
-app.get("/scrape", (req, res) => {
-    axios.get("https://www.latimes.com").then( (response) => {
+app.get("/scrape", function(req, res) {
+    axios.get("https://www.latimes.com").then(function(response) {
         var $ = cheerio.load(response.data);
 
-        $("h5").each( (i, element) => {
+        $("h5").each(function(i, element) {
             var result = {};
 
             result.headline = $(element).find("a").text();
@@ -26,9 +26,9 @@ app.get("/scrape", (req, res) => {
             result.summary = $(element).children(".summary").text();
             console.log(result);
 
-            db.Article.create(result).then( (data) => {
+            db.Article.create(result).then(function(data) {
                 console.log(data);
-            }).catch( (err) => {
+            }).catch(function(err) {
                 console.log(err);
             });
         });
@@ -36,68 +36,68 @@ app.get("/scrape", (req, res) => {
     });
 });
 
-app.put("/articles/:id", (req, res) => {
+app.put("/articles/:id", function(req, res) {
     db.Article.findOneAndUpdate({
         _id: req.params.id
     }, {
         saved: true
-    }).then( (data) => {
+    }).then(function(data) {
         res.json(data);
-    }).catch( (err) => {
+    }).catch(function(err) {
         res.json(err);
     });
 });
 
-app.get("/articles", (req, res) => {
-    db.Article.find({}).then( (data) => {
+app.get("/articles", function(req, res) {
+    db.Article.find({}).then(function(data) {
         res.json(data);
-    }).catch( (err) => {
+    }).catch(function(err) {
         res.json(err);
     });
 });
 
-app.get("/articles/:id", (req, res) => {
+app.get("/articles/:id", function(req, res) {
     db.Article.findOne({ _id: req.params.id })
-        .populate("comment")
-        .then( (data) => {
+        .populate("comments")
+        .then(function(data) {
             res.json(data);
-        }).catch( (err) => {
+        }).catch(function(err) {
             res.json(err);
         });
 });
 
-app.get("/saved", (req, res) => {
+app.get("/saved", function(req, res) {
     db.Article.find({ saved: true })
-        .populate("comment")
-        .then( (data) => {
+        .populate("comments")
+        .then(function(data) {
             res.json(data);
-        }).catch( (err) => {
+        }).catch(function(err) {
             res.json(err);
         });
 });
 
-app.get("/articles/:id", (req, res) => {
-    db.Comment.create(req.body).then( (dbComment) => {
+app.post("/articles/:id", function(req, res) {
+    db.Comment.create(req.body).then(function(dbComment) {
         return db.Article.findOneAndUpdate({
             _id: req.params.id
         }, {
-            comment: dbComment._id
+            $push: {comments: dbComment._id}
         }, {
             new: true
         });
-    }).then( (dbArticle) => {
+    }).then(function(dbArticle) {
         res.json(dbArticle);
-    }).catch( (err) => {
+    }).catch(function(err) {
         res.json(err);
     });
 });
 
-app.delete("/clear", (req, res) => {
-    db.Article.deleteMany({}).catch( (err) => {
+app.delete("/clear", function(req, res) {
+    db.Article.deleteMany({}).catch(function(err) {
         res.json (err);
     });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, function() {
     console.log("App running on port " + PORT);
 });
