@@ -92,6 +92,15 @@ app.post("/articles/:id", function(req, res) {
     });
 });
 
+app.delete("/articles/delete/:id", function(req, res) {
+    db.Article.findOneAndDelete({ _id: req.params.id })
+        .then(function(data) {
+            res.json(data);
+        }).catch(function (err) {
+            res.json(err);
+        });
+});
+
 app.delete("/clear", function(req, res) {
     db.Article.deleteMany({}).catch(function(err) {
         res.json (err);

@@ -16,13 +16,25 @@ $("#clear").on("click", function() {
     clearArticles();
 });
 
+$(document).on("click", "#deleteArticle", function() {
+    var thisId = $(this).attr("data-id");
+    $.ajax({
+        method: "DELETE",
+        url: "/articles/delete/" + thisId
+    });
+    $("#articles").hide();
+    $("#scrape").hide();
+    $("#savedArticles").empty();
+    savedArticles();
+});
+
 $(document).on("click", "#saveArticle", function() {
     var thisId = $(this).attr("data-id");
 
     $.ajax({
         method: "PUT",
         url: "/articles/" + thisId
-    }).then( (data) => {
+    }).then(function(data) {
     });
     location.reload();
 });
@@ -32,34 +44,7 @@ $("#saved").on("click", function() {
     $("#scrape").hide();
     $("#savedArticles").empty();
     $("#savedArticles").show();
-    $.getJSON("/saved", function(data) {
-        var latimes = "https://www.latimes.com";
-        for (let i = 0; i <data.length; i++) {
-            var div = $("<div>")
-                .addClass("card blue-grey z-depth-4");
-            var content = $("<div>").addClass("card-content white-text");
-            var title = $("<a>")
-                .addClass("card-title")
-                .attr("href", latimes + data[i].link)
-                .text(data[i].headline);
-            var action = $("<div>").addClass("card-action right-align");
-            var deleteComment = $("<a>")
-                .addClass("waves-effect btn blue-grey darken-2")
-                .attr("data-id", data[i]._id)
-                .attr("id", "deleteComment")
-                .text("DELETE ARTICLE");
-            var comment = $("<a>")
-                .addClass("waves-effect btn blue-grey darken-2 modal-trigger")
-                .attr("data-id", data[i]._id)
-                .attr("id", "comment")
-                .attr("href", "#modalComment")
-                .text("COMMENTS");
-            action.append(deleteComment, comment);
-            content.append(title);
-            div.append(content, action);
-            $("#savedArticles").append(div);
-        }
-    });
+    savedArticles();
 });
 
 $(document).on("click", "#comment", function() {
@@ -84,7 +69,7 @@ $(document).on("click", "#comment", function() {
             .attr("for", "textarea1")
             .text("Comments");
         var saveComment = $("<a>")
-            .addClass("modal-close waves-effect btn blue-grey darken-2")
+            .addClass("modal-close waves-effect waves-green btn-flat")
             .attr("data-id", data._id)
             .attr("id", "save-comment")
             .text("Save");
@@ -115,7 +100,7 @@ $(document).on("click", "#save-comment", function() {
             .addClass("waves-effect btn blue-grey disabled")
             .text(data.data);
         var clearButton = $("<a>")
-            .addClass("waves-effect btn-flat blue-grey")
+            .addClass("waves-effect waves-green btn-flat")
             .text("X");
         $("#savedComment").append(commentDisplay, clearButton);
     });
@@ -138,7 +123,7 @@ function displayArticles() {
                 .attr("href", latimes + data[i].link)
                 .text("Read More");
             var save = $("<a>")
-                .addClass("waves-effect btn blue-grey darken-2")
+                .addClass("waves-effect btn-flat blue-grey darken-2")
                 .attr("data-id", data[i]._id)
                 .attr("id", "saveArticle")
                 .text("Save");
@@ -148,6 +133,39 @@ function displayArticles() {
             if (!data[i].saved) {
                 $("#articles").append(div);
             }
+        }
+    });
+}
+
+function savedArticles() {
+    $("#articles").hide();
+
+    $.getJSON("/saved", function(data) {
+        var latimes = "https://www.latimes.com";
+        for (let i = 0; i <data.length; i++) {
+            var div = $("<div>")
+                .addClass("card blue-grey z-depth-4");
+            var content = $("<div>").addClass("card-content white-text");
+            var title = $("<a>")
+                .addClass("card-title")
+                .attr("href", latimes + data[i].link)
+                .text(data[i].headline);
+            var action = $("<div>").addClass("card-action right-align");
+            var deleteComment = $("<a>")
+                .addClass("waves-effect btn-flat blue-grey darken-2")
+                .attr("data-id", data[i]._id)
+                .attr("id", "deleteArticle")
+                .text("DELETE ARTICLE");
+            var comment = $("<a>")
+                .addClass("waves-effect btn-flat blue-grey darken-2 modal-trigger")
+                .attr("data-id", data[i]._id)
+                .attr("id", "comment")
+                .attr("href", "#modalComment")
+                .text("COMMENTS");
+            action.append(deleteComment, comment);
+            content.append(title);
+            div.append(content, action);
+            $("#savedArticles").append(div);
         }
     });
 }
